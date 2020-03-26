@@ -3,10 +3,13 @@ plugins {
 	id 'io.spring.dependency-management' version '1.0.9.RELEASE'
 	id 'java'
 	id 'net.researchgate.release' version '2.6.0'
+	
+    id "com.palantir.docker" version "0.25.0"
+
 }
 
 group = 'com.hashanr.microservices'
-version = '0.0.1-SNAPSHOT'
+//version = '0.0.1-SNAPSHOT'
 sourceCompatibility = '1.8'
 
 configurations {
@@ -24,7 +27,9 @@ ext {
 	set('springCloudVersion', "Hoxton.SR3")
 }
 
+
 dependencies {
+    
 	implementation 'org.springframework.cloud:spring-cloud-config-server'
 	developmentOnly 'org.springframework.boot:spring-boot-devtools'
 	testImplementation('org.springframework.boot:spring-boot-starter-test') {
@@ -84,3 +89,17 @@ release {
         pinExternals = false   // allows to pin the externals when tagging, requires subversion client >= 1.9.0
     }
 }
+
+
+docker {
+	
+	name "${project.name}"
+	tag 'DockerHub', "hashanr/microservices:${project.version}"
+	dockerfile file('src/docker/Dockerfile')
+	copySpec.from(jar).rename(".*","app.jar")
+	buildArgs(['JAR_FILE': "app.jar"])
+}
+
+
+
+
